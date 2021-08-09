@@ -1,19 +1,22 @@
-apiVersion: apps/v1
-kind: Deployment
-metadata:
+
+#kubectl apply -f nameoftheyamlfile. any yaml if you execute it will happen from top to botton and left to right
+#we know that in k8s all the communication happen through api
+apiVersion: apps/v1 #this si the api which i am executiron. 
+kind: Deployment #name of the api is we are using deployment api we are going to create a deployment
+metadata: #using metadata we are provisind the name of the deployment
   name: nginx-deployment
   labels:
     app: nginx 
 spec:
-  replicas: 3
-  selector:
+  replicas: 3 #inside the deployment we will have 3 pod
+  selector: #the job of selector is that it will select all the three pod and provide 
     matchLabels:
-      app: nginx 
-  template:
+      app: nginx #labels to all this three pod 
+  template: #this is the template for deploying container. 
     metadata:
       labels:
         app: nginx 
-    spec:
+    spec: #inside every pod it is going to deploy the container for you
       containers:
       - name: nginx
         image: nginx:1.14.2
