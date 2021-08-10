@@ -1,0 +1,84 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: task-pv-volume
+spec:
+  storageClassName: nodestorage
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteOnce #ReadWriteMany Read
+  hostPath:
+    path: /mnt/data
+--- 
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: task-pv-claim
+spec:
+  storageClassName: nodestorage #it will map your pvc with pv
+  resources:
+    requests:
+      storage: 10Gi
+  accessModes:
+    - ReadWriteOnce
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: usermanagement-db-creation-script
+data:
+  mysql_usermgmt.sql: |-
+    DROP DATABASE IF EXISTS webappdb;
+    CREATE DATABASE webappdb;
+--- #end of yaml file
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-db-password
+type: Opaque
+data:
+  password: ZGJwYXNzd29yZDEx
+--- 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.6
+        env:
+        - name: MYSQL_ROOT_PASSWORD #mysql password from secret in k8s
+          valueFrom:
+            secretKeyRef:
+              name: mysql-db-password
+              key: password       
+        ports:
+          - containerPort: 3306
+            name: mysql
+        # now we need to attach storage and configmap
+        volumeMounts:
+          - name: mysql-persistent-storage
+            mountPath: /var/lib/mysql
+          - name: usermanagement-db-creation-script
+            mountPath: /docker-entrypoint-initdb.d
+      volumes: #mapping to the actual storage
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: task-pv-claim
+        - name: usermanagement-db-creation-script
+          configMap:
+            name: usermanagement-db-creation-script
+
