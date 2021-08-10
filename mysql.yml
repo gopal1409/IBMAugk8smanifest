@@ -31,7 +31,7 @@ spec:
           - name: mysql-persistent-storage
             mountPath: /var/lib/mysql
           - name: usermanagement-db-creation-script
-            mountPath: /docker-entry-point-initdb.d
+            mountPath: /docker-entrypoint-initdb.d
       volumes: #mapping to the actual storage
         - name: mysql-persistent-storage
           persistentVolumeClaim:
