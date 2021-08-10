@@ -20,8 +20,9 @@ spec:
         env:
         - name: MYSQL_ROOT_PASSWORD #mysql password from secret in k8s
           valueFrom:
-            name: mysql-db-password
-            key: password       
+            secretKeyRef:
+              name: mysql-db-password
+              key: password       
         ports:
           - containerPort: 3306
             name: mysql
