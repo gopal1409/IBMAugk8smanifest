@@ -8,9 +8,12 @@ metadata: #using metadata we are provisind the name of the deployment
   labels:
     app: nginx 
 spec:
+  #nexus.yourdoamin.com
+  #secretName: nexus-tls
   replicas: 3 #inside the deployment we will have 3 pod
+  
   selector: #the job of selector is that it will select all the three pod and provide 
-    matchLabels:
+    matchLabels: #match expression
       app: nginx #labels to all this three pod 
   template: #this is the template for deploying container. 
     metadata:
@@ -18,6 +21,11 @@ spec:
         app: nginx 
     spec: #inside every pod it is going to deploy the container for you
       containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+        - containerPort: 80
+        containers:
       - name: nginx
         image: nginx:1.14.2
         ports:
