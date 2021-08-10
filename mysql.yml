@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql 
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.6
+        env:
+        - name: MYSQL_ROOT_PASSWORD #mysql password from secret in k8s
+          valueFrom:
+            name: mysql-db-password
+            key: password       
+        ports:
+          - containerPort: 3306
+            name: mysql
+        # now we need to attach storage and configmap
+        volumeMounts:
+          - name: mysql-persistent-storage
+            mountPath: /var/lib/mysql
+          - name: usermanagement-db-creation-script
+            mountPath: /docker-entry-point-initdb.d
+      volumes: #mapping to the actual storage
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: task-pv-claim
+        - name: usermanagement-db-creation-script
+          configMap:
+            name: usermanagement-db-creation-script
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
