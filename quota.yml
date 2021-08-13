@@ -4,7 +4,7 @@ metadata:
   name: mem-cpu-demo
 spec:
   hard:
-    requests.cpu: "1"
-    requests.memory: 1Gi
+    requests.cpu: "2"
+    requests.memory: 2Gi #in this namespace all the container can have max 1Gb of memory current configuration
     limits.cpu: "2"
-    limits.memory: 2Gi
+    limits.memory: 2Gi #extended configuration. 
